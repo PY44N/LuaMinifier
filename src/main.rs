@@ -1,3 +1,5 @@
+use std::{fs, path::Path};
+
 use lua_parser::state::State;
 use minifier::Minifier;
 
@@ -8,5 +10,10 @@ fn main() {
     let ast = state.parse_file("input.lua").expect("Failed to parse file");
 
     let mut minifier = Minifier::new(ast);
-    minifier.minify();
+    let output = minifier.minify();
+    println!("{}", output);
+    if Path::new("output.lua").exists() {
+        fs::remove_file("output.lua").unwrap();
+    }
+    fs::write("output.lua", output).unwrap();
 }

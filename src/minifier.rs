@@ -1,12 +1,7 @@
 use lua_parser::ast::{
-    BinaryOperator, Expression, Field, FunctionCall, FunctionDefinition, GenericFor, ParameterList,
-    Statement, UnaryOperator,
+    BinaryOperator, Expression, Field, FunctionCall, FunctionDefinition, GenericFor, IfThenElse,
+    NumberFor, ParameterList, Statement, UnaryOperator,
 };
-
-pub struct Minifier {
-    ast: Vec<Statement>,
-    output: String,
-}
 
 fn get_binary_operator(operator: &BinaryOperator) -> String {
     String::from(match operator {
@@ -114,6 +109,27 @@ fn minify_generic_for(for_loop: &GenericFor) -> String {
     )
 }
 
+fn minify_numeric_for(for_loop: &NumberFor) -> String {
+    // TODO: Some of these arguments are optional
+    format!(
+        "for {}={},{},{} do {}end",
+        for_loop.name,
+        minify_expression(&for_loop.init),
+        minify_expression(&for_loop.limit),
+        minify_expression(&for_loop.step),
+        minify_statement_list(&for_loop.stmts)
+    )
+}
+
+fn minify_if(if_statement: &IfThenElse) -> String {
+    format!(
+        "if {} then {}else {}end",
+        minify_expression(&if_statement.condition),
+        minify_statement_list(&if_statement.then),
+        minify_statement_list(&if_statement.els),
+    )
+}
+
 fn minify_expression(expression: &Expression) -> String {
     match expression {
         Expression::True => todo!(),
@@ -164,7 +180,7 @@ fn minify_expression_list(expression_list: &Vec<Expression>) -> String {
 }
 
 fn minify_statement(statement: &Statement) -> String {
-    (match statement {
+    match statement {
         Statement::Assign(left, right) => {
             format!(
                 "{}={}",
@@ -181,46 +197,49 @@ fn minify_statement(statement: &Statement) -> String {
         }
         Statement::FuncCall(expr) => minify_expression(expr),
         Statement::MethodCall(_) => todo!(),
-        Statement::DoBlock(_) => todo!(),
+        Statement::DoBlock(body) => format!("do {}end", minify_statement_list(body)),
         Statement::While(check, body) => format!(
             "while {} do {}end",
             minify_expression(check),
             minify_statement_list(body)
         ),
-        Statement::Repeat(_, _) => todo!(),
-        Statement::If(_) => todo!(),
-        Statement::NumberFor(_) => todo!(),
+        Statement::Repeat(case, body) => format!(
+            "repeat {}until {}",
+            minify_statement_list(body),
+            minify_expression(case)
+        ),
+        Statement::If(if_statement) => minify_if(if_statement),
+        Statement::NumberFor(for_loop) => minify_numeric_for(for_loop),
         Statement::GenericFor(for_loop) => minify_generic_for(for_loop),
         Statement::FuncDef(def) => minify_function_definition(def),
         Statement::MethodDef(_) => todo!(),
         Statement::Return(_) => todo!(),
         Statement::Break => todo!(),
-    } + "; ")
-        .to_owned()
+    }
 }
 
 fn minify_statement_list(statement_list: &Vec<Statement>) -> String {
     let mut ret = String::new();
 
     for statement in statement_list {
-        let state = minify_statement(&statement);
+        let state = minify_statement(&statement) + "; ";
+        println!("{}", state);
         ret += &state;
     }
 
     ret
 }
 
+pub struct Minifier {
+    ast: Vec<Statement>,
+}
+
 impl Minifier {
     pub fn new(ast: Vec<Statement>) -> Self {
-        Self {
-            output: String::new(),
-            ast,
-        }
+        Self { ast }
     }
 
-    pub fn minify(&mut self) {
-        self.output += &minify_statement_list(&self.ast);
-
-        println!("{}", self.output);
+    pub fn minify(&mut self) -> String {
+        minify_statement_list(&self.ast)
     }
 }

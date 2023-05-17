@@ -1,0 +1,1 @@
+local a={"Hello","world"}; log = function(val) print(val); end; local log_vararg=function(...) local args={...}; for _,v in pairs(args) do log(v); end; end; local i=1; while i<=#a do log_vararg(a[i]); i=i+1; end; do for j=0,100,1 do if j%2==0 then repeat if j%10 then print(j); else end; j=j-1; until j<=0; else end; end; end; 
