@@ -60,7 +60,7 @@ pub fn minify_statement_list(statement_list: &Vec<Statement>) -> String {
     let mut ret = String::new();
 
     for statement in statement_list {
-        let state = minify_statement(&statement) + "; ";
+        let state = minify_statement(&statement) + ";";
         ret += &state;
     }
 
