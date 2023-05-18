@@ -24,6 +24,10 @@ if true and (false or true) then
     print(true and (false or true) and (nil or false))
 end
 
+for i=1,10 do
+    print(i)
+end
+
 do
     for j = 0, 100 do
         if j % 2 == 0 then

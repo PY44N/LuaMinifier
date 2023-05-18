@@ -5,7 +5,7 @@ use crate::minifier::expressions::minify_expression;
 pub fn minify_field(field: &Field) -> String {
     if let Some(key) = &field.key {
         String::from(format!(
-            "[{}] = {}",
+            "[{}]={}",
             minify_expression(key),
             minify_expression(&field.val)
         ))
