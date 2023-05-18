@@ -1,9 +1,7 @@
 use std::{fs, path::Path};
 
+use lua_minifier::minifier::minify_ast;
 use lua_parser::state::State;
-use minifier::Minifier;
-
-pub mod minifier;
 
 fn main() {
     let mut state = State::new();
@@ -11,8 +9,7 @@ fn main() {
 
     println!("{:?}", ast);
 
-    let mut minifier = Minifier::new(ast);
-    let output = minifier.minify();
+    let output = minify_ast(ast);
     println!("{}", output);
     if Path::new("output.lua").exists() {
         fs::remove_file("output.lua").unwrap();
