@@ -9,6 +9,8 @@ fn main() {
     let mut state = State::new();
     let ast = state.parse_file("input.lua").expect("Failed to parse file");
 
+    println!("{:?}", ast);
+
     let mut minifier = Minifier::new(ast);
     let output = minifier.minify();
     println!("{}", output);

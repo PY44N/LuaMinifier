@@ -1,6 +1,6 @@
 use lua_parser::ast::{
     BinaryOperator, Expression, Field, FunctionCall, FunctionDefinition, GenericFor, IfThenElse,
-    NumberFor, ParameterList, Statement, UnaryOperator,
+    MethodCall, MethodDefinition, NumberFor, ParameterList, Statement, UnaryOperator,
 };
 
 fn get_binary_operator(operator: &BinaryOperator) -> String {
@@ -22,6 +22,10 @@ fn get_binary_operator(operator: &BinaryOperator) -> String {
         BinaryOperator::Or => "or",
         BinaryOperator::NoBinary => panic!("Got operator nobinary"),
     })
+}
+
+fn is_compressable_binary_operator(operator: &BinaryOperator) -> bool {
+    *operator != BinaryOperator::And && *operator != BinaryOperator::Or
 }
 
 fn get_unary_operator(operator: &UnaryOperator) -> String {
@@ -130,11 +134,31 @@ fn minify_if(if_statement: &IfThenElse) -> String {
     )
 }
 
+fn minify_method_definition(method: &MethodDefinition) -> String {
+    // TODO: Deal with the fact that this might break things
+    // Is there any actual internal difference between : and .
+    format!(
+        "{}.{}={}",
+        minify_expression(&method.receiver),
+        method.method,
+        minify_expression(&method.body)
+    )
+}
+
+fn minify_method_call(method: &MethodCall) -> String {
+    format!(
+        "{}.{}({})",
+        minify_expression(&method.receiver),
+        method.method,
+        minify_expression_list(&method.args)
+    )
+}
+
 fn minify_expression(expression: &Expression) -> String {
     match expression {
-        Expression::True => todo!(),
-        Expression::False => todo!(),
-        Expression::Nil => todo!(),
+        Expression::True => String::from("true"),
+        Expression::False => String::from("false"),
+        Expression::Nil => String::from("nil"),
         Expression::Number(num) => num.to_string(),
         Expression::String(val) => format!("\"{}\"", val),
         Expression::Dots => String::from("..."),
@@ -144,13 +168,24 @@ fn minify_expression(expression: &Expression) -> String {
         }
         Expression::Table(field_list) => format!("{{{}}}", minify_field_list(field_list)),
         Expression::FuncCall(call) => minify_function_call(call),
-        Expression::MethodCall(_) => todo!(),
-        Expression::BinaryOp(operator, left, right) => format!(
-            "{}{}{}",
-            minify_expression(left),
-            get_binary_operator(operator),
-            minify_expression(right)
-        ),
+        Expression::MethodCall(method) => minify_method_call(method),
+        Expression::BinaryOp(operator, left, right) => {
+            if is_compressable_binary_operator(operator) {
+                format!(
+                    "{}{}{}",
+                    minify_expression(left),
+                    get_binary_operator(operator),
+                    minify_expression(right)
+                )
+            } else {
+                format!(
+                    "{} {} {}",
+                    minify_expression(left),
+                    get_binary_operator(operator),
+                    minify_expression(right)
+                )
+            }
+        }
         Expression::UnaryOp(operator, identifier) => format!(
             "{}{}",
             get_unary_operator(operator),
@@ -196,7 +231,7 @@ fn minify_statement(statement: &Statement) -> String {
             )
         }
         Statement::FuncCall(expr) => minify_expression(expr),
-        Statement::MethodCall(_) => todo!(),
+        Statement::MethodCall(method) => minify_expression(method),
         Statement::DoBlock(body) => format!("do {}end", minify_statement_list(body)),
         Statement::While(check, body) => format!(
             "while {} do {}end",
@@ -212,9 +247,16 @@ fn minify_statement(statement: &Statement) -> String {
         Statement::NumberFor(for_loop) => minify_numeric_for(for_loop),
         Statement::GenericFor(for_loop) => minify_generic_for(for_loop),
         Statement::FuncDef(def) => minify_function_definition(def),
-        Statement::MethodDef(_) => todo!(),
-        Statement::Return(_) => todo!(),
-        Statement::Break => todo!(),
+        Statement::MethodDef(method) => minify_method_definition(method),
+        Statement::Return(args) => {
+            let exprs = minify_expression_list(args);
+            if exprs == "" {
+                String::from("return")
+            } else {
+                format!("return {}", exprs)
+            }
+        }
+        Statement::Break => String::from("break"),
     }
 }
 
@@ -223,7 +265,6 @@ fn minify_statement_list(statement_list: &Vec<Statement>) -> String {
 
     for statement in statement_list {
         let state = minify_statement(&statement) + "; ";
-        println!("{}", state);
         ret += &state;
     }
 

@@ -1,21 +1,27 @@
 local a = {"Hello", "world"}
 
-function log(val)
-    print(val)
-end
+local logger = {
+    log = function(val)
+        print(val)
+    end
+}
 
-local function log_vararg(...)
+function logger:log_vararg(...)
     local args = {...}
 
     for _, v in pairs(args) do
-        log(v)
+        logger.log(v)
     end
 end
 
 local i = 1
 while i <= #a do
-    log_vararg(a[i])
+    logger:log_vararg(a[i])
     i = i + 1
+end
+
+if true and (false or true) then
+    print(true and (false or true) and (nil or false))
 end
 
 do
@@ -24,9 +30,11 @@ do
             repeat
                 if j % 10 then
                     print(j)
+                    break
                 end
                 j = j - 1
             until j <= 0
+            return;
         end
     end
 end
