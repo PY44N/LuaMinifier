@@ -1,17 +1,17 @@
 use lua_parser::ast::{Expression, GenericFor, NumberFor};
 
 use crate::minifier::{
-    expressions::{minify_expression, minify_expression_list},
-    parameters::minify_string_list,
-    statements::minify_statement_list,
+    expressions::{expression_list_minification, expression_minification},
+    parameters::string_list_minification,
+    statements::statement_list_minification,
 };
 
-pub fn minify_generic_for(for_loop: &GenericFor) -> String {
+pub fn generic_for_minification(for_loop: &GenericFor) -> String {
     format!(
         "for {} in {} do {}end",
-        minify_string_list(&for_loop.names),
-        minify_expression_list(&for_loop.exprs),
-        minify_statement_list(&for_loop.stmts)
+        string_list_minification(&for_loop.names),
+        expression_list_minification(&for_loop.exprs),
+        statement_list_minification(&for_loop.stmts)
     )
 }
 
@@ -23,23 +23,23 @@ fn is_default_numeric_for_loop_step(for_loop: &NumberFor) -> bool {
     false
 }
 
-pub fn minify_numeric_for(for_loop: &NumberFor) -> String {
+pub fn numeric_for_minification(for_loop: &NumberFor) -> String {
     if is_default_numeric_for_loop_step(for_loop) {
         format!(
             "for {}={},{} do {}end",
             for_loop.name,
-            minify_expression(&for_loop.init),
-            minify_expression(&for_loop.limit),
-            minify_statement_list(&for_loop.stmts)
+            expression_minification(&for_loop.init),
+            expression_minification(&for_loop.limit),
+            statement_list_minification(&for_loop.stmts)
         )
     } else {
         format!(
             "for {}={},{},{} do {}end",
             for_loop.name,
-            minify_expression(&for_loop.init),
-            minify_expression(&for_loop.limit),
-            minify_expression(&for_loop.step),
-            minify_statement_list(&for_loop.stmts)
+            expression_minification(&for_loop.init),
+            expression_minification(&for_loop.limit),
+            expression_minification(&for_loop.step),
+            statement_list_minification(&for_loop.stmts)
         )
     }
 }

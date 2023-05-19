@@ -1,23 +1,23 @@
 use lua_parser::ast::{MethodCall, MethodDefinition};
 
-use crate::minifier::expressions::{minify_expression, minify_expression_list};
+use crate::minifier::expressions::{expression_list_minification, expression_minification};
 
-pub fn minify_method_definition(method: &MethodDefinition) -> String {
+pub fn method_definition_minification(method: &MethodDefinition) -> String {
     // TODO: Deal with the fact that this might break things
     // Is there any actual internal difference between : and .
     format!(
         "{}.{}={}",
-        minify_expression(&method.receiver),
+        expression_minification(&method.receiver),
         method.method,
-        minify_expression(&method.body)
+        expression_minification(&method.body)
     )
 }
 
-pub fn minify_method_call(method: &MethodCall) -> String {
+pub fn method_call_minification(method: &MethodCall) -> String {
     format!(
         "{}.{}({})",
-        minify_expression(&method.receiver),
+        expression_minification(&method.receiver),
         method.method,
-        minify_expression_list(&method.args)
+        expression_list_minification(&method.args)
     )
 }

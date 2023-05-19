@@ -1,19 +1,19 @@
 use lua_parser::ast::{FunctionCall, FunctionDefinition};
 
-use crate::minifier::expressions::{minify_expression, minify_expression_list};
+use crate::minifier::expressions::{expression_list_minification, expression_minification};
 
-pub fn minify_function_call(call: &FunctionCall) -> String {
+pub fn function_call_minification(call: &FunctionCall) -> String {
     format!(
         "{}({})",
-        minify_expression(&call.func),
-        minify_expression_list(&call.args)
+        expression_minification(&call.func),
+        expression_list_minification(&call.args)
     )
 }
 
-pub fn minify_function_definition(def: &FunctionDefinition) -> String {
+pub fn function_definition_minification(def: &FunctionDefinition) -> String {
     format!(
         "{} = {}",
-        minify_expression_list(&def.name),
-        minify_expression_list(&def.body)
+        expression_list_minification(&def.name),
+        expression_list_minification(&def.body)
     )
 }

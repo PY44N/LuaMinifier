@@ -1,6 +1,6 @@
 use lua_parser::ast::Statement;
 
-use self::statements::minify_statement_list;
+use self::statements::statement_list_minification;
 
 mod expressions;
 mod fields;
@@ -13,5 +13,5 @@ mod parameters;
 mod statements;
 
 pub fn minify_ast(ast: Vec<Statement>) -> String {
-    minify_statement_list(&ast)
+    statement_list_minification(&ast)
 }

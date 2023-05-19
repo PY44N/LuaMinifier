@@ -1,6 +1,6 @@
 use lua_parser::ast::ParameterList;
 
-pub fn minify_string_list(strings: &Vec<String>) -> String {
+pub fn string_list_minification(strings: &Vec<String>) -> String {
     let mut ret = String::new();
 
     for (i, param) in strings.iter().enumerate() {
@@ -13,8 +13,8 @@ pub fn minify_string_list(strings: &Vec<String>) -> String {
     ret
 }
 
-pub fn minify_parameter_list(list: &ParameterList) -> String {
-    let mut ret = minify_string_list(&list.names);
+pub fn parameter_list_minification(list: &ParameterList) -> String {
+    let mut ret = string_list_minification(&list.names);
 
     if list.vargs {
         if list.names.len() != 0 {
