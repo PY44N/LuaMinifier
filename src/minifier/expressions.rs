@@ -30,14 +30,14 @@ pub fn minify_expression(expression: &Expression) -> String {
         Expression::BinaryOp(operator, left, right) => {
             if is_compressable_binary_operator(operator) {
                 format!(
-                    "{}{}{}",
+                    "({}{}{})",
                     minify_expression(left),
                     get_binary_operator(operator),
                     minify_expression(right)
                 )
             } else {
                 format!(
-                    "{} {} {}",
+                    "({} {} {})",
                     minify_expression(left),
                     get_binary_operator(operator),
                     minify_expression(right)
