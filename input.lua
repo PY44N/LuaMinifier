@@ -1,3 +1,11 @@
-print(2 * 2 + 2)
-print(2 * (2 + 2))
-print(2 * (2 + (3 * (4 + (4+5))) * 2) + 3)
+local strings = {"Hello", "world"}
+
+local function log(str)
+    print(str)
+end
+
+local index = 1
+while index <= #strings do
+    log(strings[index])
+    index = index + 1
+end

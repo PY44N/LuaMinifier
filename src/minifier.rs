@@ -11,6 +11,8 @@ mod methods;
 mod operators;
 mod parameters;
 mod statements;
+mod util;
+mod variables;
 
 pub fn minify_ast(ast: Vec<Statement>) -> String {
     statement_list_minification(&ast)

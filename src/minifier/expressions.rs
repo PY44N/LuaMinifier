@@ -2,7 +2,7 @@ use lua_parser::ast::Expression;
 
 use crate::minifier::{
     operators::get_binary_operator, parameters::parameter_list_minification,
-    statements::statement_list_minification,
+    statements::statement_list_minification, variables::get_variable,
 };
 
 use super::{
@@ -20,7 +20,10 @@ pub fn expression_minification(expression: &Expression) -> String {
         Expression::Number(num) => num.to_string(),
         Expression::String(val) => format!("\"{}\"", val),
         Expression::Dots => String::from("..."),
-        Expression::Ident(val) => val.clone(),
+        Expression::Ident(val) => {
+            println!("{} {}", val, get_variable(val.clone()));
+            val.clone()
+        }
         Expression::AttrGet(attr, val) => {
             format!(
                 "{}[{}]",

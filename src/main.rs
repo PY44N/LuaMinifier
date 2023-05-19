@@ -7,8 +7,6 @@ fn main() {
     let mut state = State::new();
     let ast = state.parse_file("input.lua").expect("Failed to parse file");
 
-    println!("{:?}", ast);
-
     let output = minify_ast(ast);
     println!("{}", output);
     if Path::new("output.lua").exists() {
