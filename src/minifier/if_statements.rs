@@ -1,20 +1,22 @@
 use lua_parser::ast::IfThenElse;
 
-use crate::minifier::{expressions::minify_expression, statements::minify_statement_list};
+use crate::minifier::{
+    expressions::expression_minification, statements::statement_list_minification,
+};
 
-pub fn minify_if(if_statement: &IfThenElse) -> String {
+pub fn if_minification(if_statement: &IfThenElse) -> String {
     if if_statement.els.len() == 0 {
         format!(
             "if {} then {}end",
-            minify_expression(&if_statement.condition),
-            minify_statement_list(&if_statement.then),
+            expression_minification(&if_statement.condition),
+            statement_list_minification(&if_statement.then),
         )
     } else {
         format!(
             "if {} then {}else {}end",
-            minify_expression(&if_statement.condition),
-            minify_statement_list(&if_statement.then),
-            minify_statement_list(&if_statement.els),
+            expression_minification(&if_statement.condition),
+            statement_list_minification(&if_statement.then),
+            statement_list_minification(&if_statement.els),
         )
     }
 }

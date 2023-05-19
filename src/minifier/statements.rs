@@ -1,51 +1,53 @@
 use lua_parser::ast::Statement;
 
-use crate::minifier::{expressions::minify_expression_list, parameters::minify_string_list};
-
-use super::{
-    expressions::minify_expression,
-    for_loops::{minify_generic_for, minify_numeric_for},
-    functions::minify_function_definition,
-    if_statements::minify_if,
-    methods::minify_method_definition,
+use crate::minifier::{
+    expressions::expression_list_minification, parameters::string_list_minification,
 };
 
-pub fn minify_statement(statement: &Statement) -> String {
+use super::{
+    expressions::expression_minification,
+    for_loops::{generic_for_minification, numeric_for_minification},
+    functions::function_definition_minification,
+    if_statements::if_minification,
+    methods::method_definition_minification,
+};
+
+pub fn statement_minification(statement: &Statement) -> String {
     match statement {
         Statement::Assign(left, right) => {
             format!(
                 "{}={}",
-                minify_expression_list(left),
-                minify_expression_list(right)
+                expression_list_minification(left),
+                expression_list_minification(right)
             )
         }
         Statement::LocalAssign(parameters, expression_list) => {
             format!(
                 "local {}={}",
-                minify_string_list(parameters),
-                minify_expression_list(expression_list)
+                string_list_minification(parameters),
+                expression_list_minification(expression_list)
             )
         }
-        Statement::FuncCall(expr) => minify_expression(expr),
-        Statement::MethodCall(method) => minify_expression(method),
-        Statement::DoBlock(body) => format!("do {}end", minify_statement_list(body)),
+        Statement::FuncCall(expr) => expression_minification(expr),
+        Statement::MethodCall(method) => expression_minification(method),
+        Statement::DoBlock(body) => format!("do {}end", statement_list_minification(body)),
         Statement::While(check, body) => format!(
             "while {} do {}end",
-            minify_expression(check),
-            minify_statement_list(body)
+            expression_minification(check),
+            statement_list_minification(body)
         ),
         Statement::Repeat(case, body) => format!(
             "repeat {}until {}",
-            minify_statement_list(body),
-            minify_expression(case)
+            statement_list_minification(body),
+            expression_minification(case)
         ),
-        Statement::If(if_statement) => minify_if(if_statement),
-        Statement::NumberFor(for_loop) => minify_numeric_for(for_loop),
-        Statement::GenericFor(for_loop) => minify_generic_for(for_loop),
-        Statement::FuncDef(def) => minify_function_definition(def),
-        Statement::MethodDef(method) => minify_method_definition(method),
+        Statement::If(if_statement) => if_minification(if_statement),
+        Statement::NumberFor(for_loop) => numeric_for_minification(for_loop),
+        Statement::GenericFor(for_loop) => generic_for_minification(for_loop),
+        Statement::FuncDef(def) => function_definition_minification(def),
+        Statement::MethodDef(method) => method_definition_minification(method),
         Statement::Return(args) => {
-            let exprs = minify_expression_list(args);
+            let exprs = expression_list_minification(args);
             if exprs == "" {
                 String::from("return")
             } else {
@@ -56,11 +58,11 @@ pub fn minify_statement(statement: &Statement) -> String {
     }
 }
 
-pub fn minify_statement_list(statement_list: &Vec<Statement>) -> String {
+pub fn statement_list_minification(statement_list: &Vec<Statement>) -> String {
     let mut ret = String::new();
 
     for statement in statement_list {
-        let state = minify_statement(&statement) + ";";
+        let state = statement_minification(&statement) + ";";
         ret += &state;
     }
 
