@@ -1,1 +1,1 @@
-print(((2*2)+2));print((2*(2+2)));print(((2*(2+((3*(4+(4+5)))*2)))+3));
+local a={"Hello","world"};local b=function(c) print(c);end;local d=1;while (d<=#a) do b(a[d]);d=(d+1);end;
