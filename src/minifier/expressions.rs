@@ -20,10 +20,7 @@ pub fn expression_minification(expression: &Expression) -> String {
         Expression::Number(num) => num.to_string(),
         Expression::String(val) => format!("\"{}\"", val),
         Expression::Dots => String::from("..."),
-        Expression::Ident(val) => {
-            println!("{} {}", val, get_variable(val.clone()));
-            val.clone()
-        }
+        Expression::Ident(val) => get_variable(val.clone()),
         Expression::AttrGet(attr, val) => {
             format!(
                 "{}[{}]",

@@ -1,1 +1,1 @@
-local strings={"Hello","world"};local log=function(str) print(str);end;local index=1;while (index<=#strings) do log(strings[index]);index=(index+1);end;
+local a={"Hello","world"};local b=function(str) print(str);end;local c=1;while (c<=#a) do b(a[c]);c=(c+1);end;

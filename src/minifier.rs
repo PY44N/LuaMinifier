@@ -1,6 +1,6 @@
-use lua_parser::ast::Statement;
+use lua_parser::parser::ParserResult;
 
-use self::statements::statement_list_minification;
+use self::{statements::statement_list_minification, variables::load_locals};
 
 mod expressions;
 mod fields;
@@ -14,6 +14,8 @@ mod statements;
 mod util;
 mod variables;
 
-pub fn minify_ast(ast: Vec<Statement>) -> String {
-    statement_list_minification(&ast)
+pub fn minify_ast(parser_result: ParserResult) -> String {
+    load_locals(parser_result.locals);
+
+    statement_list_minification(&parser_result.ast)
 }

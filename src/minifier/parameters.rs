@@ -1,5 +1,7 @@
 use lua_parser::ast::ParameterList;
 
+use super::variables::get_variable;
+
 pub fn string_list_minification(strings: &Vec<String>) -> String {
     let mut ret = String::new();
 
@@ -7,7 +9,7 @@ pub fn string_list_minification(strings: &Vec<String>) -> String {
         if i != 0 {
             ret += ",";
         }
-        ret += param;
+        ret += &get_variable(param.to_string());
     }
 
     ret
