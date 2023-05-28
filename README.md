@@ -1,5 +1,7 @@
 # Lua Minfier
-A basic lua minification program written in Rust
+A basic Lua minification program written in pure Rust
+
+Created for an upcoming Lua obfuscator project
 
 ## Usage
 
