@@ -1,1 +1,0 @@
-local a={"Hello","world"};local b=function(c) print(c);end;local d=1;while (d<=#a) do b(a[d]);d=(d+1);end;
