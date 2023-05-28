@@ -25,7 +25,7 @@ dependencies = [
 [[package]]
 name = "lua_parser"
 version = "0.1.0"
-source = "git+https://github.com/PY44N/LuaParser#739b00406bfdcd3a6fdff01ea095c0f56a2fe456"
+source = "git+https://github.com/PY44N/LuaParser#0ded8b959321a2cb269c0f9300b67da46e2adb64"
 dependencies = [
  "bytes",
 ]
